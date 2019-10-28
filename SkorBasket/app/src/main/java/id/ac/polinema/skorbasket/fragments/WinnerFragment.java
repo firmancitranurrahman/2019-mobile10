@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,8 @@ public class WinnerFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
+		sharedScore =  ViewModelProviders.of(requireActivity()).get(SharedScore.class);
+
 		return inflater.inflate(R.layout.fragment_winner, container, false);
 	}
 
@@ -48,5 +52,41 @@ public class WinnerFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		txtWinner = view.findViewById(R.id.txtWinner);
 		btnReset = view.findViewById(R.id.btnReset);
+
+		sharedScore.getScoreVisitor().observe(requireActivity(), new Observer<Integer>() {
+			@Override
+			public void onChanged(Integer score) {
+				scoreVisitor = score;
+				if(scoreVisitor > scoreHome){
+					sharedScore.setWinner(false);
+				}
+			}
+		});
+		sharedScore.getScoreHome().observe(requireActivity(), new Observer<Integer>() {
+			@Override
+			public void onChanged(Integer score) {
+				scoreHome = score;
+				if(scoreVisitor < scoreHome){
+					sharedScore.setWinner(true);
+				}
+			}
+		});
+		sharedScore.getWinner().observe(requireActivity(), new Observer<Boolean>() {
+			@Override
+			public void onChanged(Boolean winner) {
+				if (winner){
+					txtWinner.setText("Home Win");
+				} else{
+					txtWinner.setText("Visitor Win");
+				}
+			}
+		});
+		btnReset.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				sharedScore.setScoreVisitor(0);
+				sharedScore.setScoreHome(0);
+			}
+		});
 	}
 }

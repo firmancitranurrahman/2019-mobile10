@@ -42,4 +42,5 @@ public class SharedScore extends AndroidViewModel {
     public LiveData<Boolean> getWinner(){
         return winner;
     }
+
 }

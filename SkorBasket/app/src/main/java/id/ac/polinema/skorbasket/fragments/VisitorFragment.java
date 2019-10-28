@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
@@ -36,6 +37,8 @@ public class VisitorFragment extends Fragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		sharedScore = ViewModelProviders.of(requireActivity()).get(SharedScore.class);
+
 	}
 
 	@Override
@@ -54,6 +57,14 @@ public class VisitorFragment extends Fragment {
 		scoreTigaVisitor = view.findViewById(R.id.scoreTigaVisitor);
 		scoreVisitor = view.findViewById(R.id.scoreVisitor);
 		scoreSatuVisitor = view.findViewById(R.id.scoreSatuVisitor);
+
+		sharedScore.getScoreVisitor().observe(requireActivity(), new Observer<Integer>() {
+			@Override
+			public void onChanged(Integer score) {
+				scoreVisitor.setText(String.valueOf(score));
+				scoreDefault = score;
+			}
+		});
 
 		scoreDuaVisitor.setOnClickListener(new View.OnClickListener() {
 			@Override
